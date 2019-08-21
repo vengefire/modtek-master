@@ -27,12 +27,20 @@ class ModCollection:
         return self.__invalidMods
 
     @property
+    def valid_mods(self):
+        return [mod for mod in self.mods if mod.name not in map(lambda d: d[0].name, self.invalid_mods)]
+
+    @property
     def mod_load_order(self):
         return self.__modLoadOrder
 
     @path.setter
     def path(self, path):
         self.__path = path
+
+    @property
+    def is_valid(self):
+        return len(self.invalid_mods) == 0
 
     @staticmethod
     def build_from_path(path):

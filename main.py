@@ -14,9 +14,13 @@ if __name__ == '__main__':
 
         args = parser.parse_args()
 
+        logger.info('Starting up modtek-master bootstrapper...')
+
         mod_collection_path = args.modspath
-        logger.info('Starting up modtek-master boot strapper...')
         mod_collection = ModCollection.build_from_path(mod_collection_path)
-        [logger.info(mod) for mod in mod_collection.mods]
+        logger.info(f'Loaded {len(mod_collection.mods)} mods : valid = [{len(mod_collection.valid_mods)}], invalid = [{len(mod_collection.invalid_mods)}]')
+        if mod_collection.is_valid is not True:
+            invalid_mods = '\r\n'.join(f'{invalid_mod[0]}\r\n{invalid_mod[1]}' for invalid_mod in mod_collection.invalid_mods)
+            logger.warning(f'ModCollection is invalid. Please find invalid mods below:\r\n{invalid_mods}')
     except Exception:
         logger.exception(f'Error executing {__name__}')
