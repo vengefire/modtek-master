@@ -2,9 +2,12 @@ import os
 from os.path import isdir, join, isfile
 
 from data.mod import Mod
+from util.logging import Logging
 
 
 class ModCollection:
+    _logger = Logging.get_default_logger()
+
     def __init__(self, path):
         self.path = path
         self.__mods = []
@@ -33,6 +36,7 @@ class ModCollection:
 
     @staticmethod
     def build_from_path(path):
+        ModCollection._logger.info(f'Building mod collection from path [{path}]')
         mod_collection = ModCollection(path)
         mod_collection.parse_mods()
         mod_collection.validate_mods()
