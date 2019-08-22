@@ -21,7 +21,7 @@ class Mod:
 
     @property
     def enabled(self):
-        return self.__json["Enabled"] if 'Enabled' in self.__json else None
+        return self.__json["Enabled"] if 'Enabled' in self.__json else True
 
     @property
     def dll(self):

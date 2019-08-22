@@ -48,6 +48,7 @@ class ModCollection:
         mod_collection = ModCollection(path)
         mod_collection.parse_mods()
         mod_collection.validate_mods()
+        mod_collection.build_load_order()
         return mod_collection
 
     def parse_mods(self):
@@ -61,11 +62,26 @@ class ModCollection:
 
     def validate_mod_dependencies(self, mod):
         missing_dependencies = [dependency for dependency in mod.depends_on if dependency not in [mod.name for mod in self.mods if mod.name == dependency]]
-        invalid_dependencies = [dependency for dependency in [mod for mod in mod.depends_on if mod not in missing_dependencies] if
-                                dependency not in [mod.name for mod in self.mods if mod.name == dependency and self.validate_mod_configuration(mod) and self.validate_mod_dependencies(mod)]]
-        return missing_dependencies, invalid_dependencies
+        invalid_dependencies = [dependency for dependency in [mod_name for mod_name in mod.depends_on if mod_name not in missing_dependencies] if
+                                dependency not in [dependency_mod.name for dependency_mod in self.mods if
+                                                   dependency_mod.name == dependency and self.validate_mod_configuration(dependency_mod) and self.validate_mod_dependencies(dependency_mod)[2] is True]]
+        return missing_dependencies, invalid_dependencies, False if len(missing_dependencies) > 0 or len(invalid_dependencies) > 0 else True
 
     def validate_mods(self):
         for mod in self.mods:
-            missing_dependencies, invalid_dependencies = self.validate_mod_dependencies(mod)
-            self.invalid_mods.append((mod, f'Missing dependencies - {missing_dependencies}, invalid dependencies = {invalid_dependencies}')) if len(missing_dependencies) > 0 or len(invalid_dependencies) > 0 else None
+            missing_dependencies, invalid_dependencies, result = self.validate_mod_dependencies(mod)
+            self.invalid_mods.append((mod, f'Missing dependencies - {missing_dependencies}, invalid dependencies = {invalid_dependencies}')) if result is False else None
+
+    def build_load_order(self):
+        iteration = 1
+        mods_to_load = self.valid_mods
+        [self.mod_load_order.append(mod) for mod in mods_to_load if len(mod.depends_on) == 0]
+        [mods_to_load.remove(mod) for mod in self.mod_load_order]
+        self._logger.info(f'Load Order Round {iteration}\r\n' + '\r\n'.join(map(lambda mod: mod.name, self.mod_load_order)))
+
+        while len(mods_to_load) > 0:
+            iteration += 1
+            valid_dependent_mods = [mod for mod in mods_to_load if len([dependency for dependency in mod.depends_on if dependency not in map(lambda mod: mod.name, self.mod_load_order)]) == 0]
+            [self.mod_load_order.append(mod) for mod in valid_dependent_mods]
+            [mods_to_load.remove(mod) for mod in valid_dependent_mods]
+            self._logger.info(f'Load Order Round {iteration}\r\n' + '\r\n'.join(map(lambda mod: mod.name, valid_dependent_mods)))
