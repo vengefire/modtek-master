@@ -81,13 +81,14 @@ class ModCollection:
 
         while len(mods_to_load) > 0:
             iteration += 1
-            valid_dependent_mods = [mod for mod
-                                    in mods_to_load
+            valid_dependent_mods = [mod for mod in mods_to_load
                                     if len([dependency for dependency in mod.depends_on
                                             if dependency not in map(lambda mod: mod.name, self.mod_load_order)]
                                            ) == 0
                                     and len([optional_dependency for optional_dependency in mod.optionally_depends_on
-                                             if optional_dependency in map(lambda mod: mod.name, self.valid_mods) and optional_dependency not in map(lambda mod: mod.name, self.mod_load_order)]) == 0]
+                                             if optional_dependency in map(lambda mod: mod.name, self.valid_mods) and
+                                             optional_dependency not in map(lambda mod: mod.name, self.mod_load_order)]
+                                            ) == 0]
             [self.mod_load_order.append(mod) for mod in valid_dependent_mods]
             [mods_to_load.remove(mod) for mod in valid_dependent_mods]
             self._logger.info(f'\r\n--Load Order Round {iteration}--\r\n' + '\r\n'.join(map(lambda mod: mod.name, valid_dependent_mods)))
