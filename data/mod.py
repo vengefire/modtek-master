@@ -1,6 +1,3 @@
-import os
-
-from util.json import load_json_from_file
 from util.logging import Logging
 
 
@@ -10,6 +7,7 @@ class Mod:
     def __init__(self, path, json_object):
         self.path = path
         self.__json = json_object
+        self.__manifest_entries = []
 
     @property
     def path(self):
@@ -39,13 +37,13 @@ class Mod:
     def path(self, path):
         self.__path = path
 
-    @staticmethod
-    def build_from_definition(path):
-        mod_config_path = os.path.join(path, 'mod.json')
-        Mod._logger.debug(f'Parsing mod package config [{mod_config_path}]...')
-        mod_definition = load_json_from_file(mod_config_path)
-        new_mod = Mod(path, mod_definition)
-        return new_mod
+    @property
+    def manifest_entries(self):
+        return self.__manifest_entries
+
+    @property
+    def json(self):
+        return self.__json
 
     def __repr__(self):
         return f'Mod [Name - {self.name}] | [Enabled - {self.enabled}]'

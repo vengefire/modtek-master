@@ -1,7 +1,7 @@
 import os
 from os.path import isdir, join, isfile
 
-from data.mod import Mod
+from builders.mod_builder import ModBuilder
 from util.logging import Logging
 
 
@@ -42,19 +42,10 @@ class ModCollection:
     def is_valid(self):
         return len(self.invalid_mods) == 0
 
-    @staticmethod
-    def build_from_path(path):
-        ModCollection._logger.info(f'Building mod collection from path [{path}]')
-        mod_collection = ModCollection(path)
-        mod_collection.parse_mods()
-        mod_collection.validate_mods()
-        mod_collection.build_load_order()
-        return mod_collection
-
     def parse_mods(self):
         mod_package_paths = filter(lambda d: isdir(join(self.path, d)) and isfile(join(self.path, d, 'mod.json')), os.listdir(self.path))
         for mod_package_path in mod_package_paths:
-            self.mods.append(Mod.build_from_definition(join(self.path, mod_package_path)))
+            self.mods.append(ModBuilder.build_from_definition(join(self.path, mod_package_path)))
 
     @staticmethod
     def validate_mod_configuration(mod):
