@@ -4,13 +4,14 @@ from data.enums import ObjectType
 
 
 class ManifestEntry:
-    def __init__(self, object_type_string, base_path, manifest_path, add_to_db):
+    def __init__(self, object_type_string, base_path, manifest_path, add_to_db, asset_bundle_name):
         self.__object_type_string = object_type_string
         self.__object_type = ObjectType(self.__object_type_string)
         self.__base_path = base_path
         self.__manifest_path = manifest_path
         self.__add_to_db = add_to_db
         self.__game_objects = []
+        self.__asset_bundle_name = asset_bundle_name
 
     @property
     def object_type_string(self):

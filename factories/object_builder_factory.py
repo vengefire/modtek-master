@@ -1,8 +1,12 @@
-from builders.object_builder import ObjectBuilder
+from builders.object_builders.DefaultJsonObjectBuilder import DefaultJsonObjectBuilder
+from builders.object_builders.PrefabObjectBuilder import PrefabObjectBuilder
+from data.enums import ObjectType
 from factories.base_factory import BaseFactory
 
 
 class ObjectBuilderFactory(BaseFactory):
     @staticmethod
-    def build_from_type(game_object_type):
-        return ObjectBuilder(game_object_type)
+    def build_from_type(manifest_entry):
+        if manifest_entry.object_type == ObjectType.Prefab:
+            return PrefabObjectBuilder(manifest_entry)
+        return DefaultJsonObjectBuilder(manifest_entry)
