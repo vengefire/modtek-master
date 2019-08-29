@@ -33,9 +33,13 @@ def delimit_consecutive_properties(string):
 def load_json_from_file(path):
     with tokenize.open(path) as file:
         string = file.read()
-        string = remove_comments(string)
-        string = unescape_quotes(string)
-        string = remove_extraneous_commas(string)
-        string = delimit_consecutive_arrays(string)
-        string = delimit_consecutive_properties(string)
-        return json.loads(string)
+        try:
+            json_object = json.loads(string)
+        except:
+            string = remove_comments(string)
+            string = unescape_quotes(string)
+            string = remove_extraneous_commas(string)
+            string = delimit_consecutive_arrays(string)
+            string = delimit_consecutive_properties(string)
+            json_object = json.loads(string)
+        return json_object
