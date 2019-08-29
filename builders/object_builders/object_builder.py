@@ -30,16 +30,3 @@ class ObjectBuilder(BaseBuilder):
 
     def build_objects(self):
         raise NotImplementedError
-
-    def build_object_from_definition(self, object_definition, filename):
-        description = object_definition['Description'] if 'Description' in object_definition else None
-        if description is None:
-            BaseBuilder._logger.warn(f'Object {object_definition} has no Description section.')
-            return None
-
-        id = description['Id']
-        name = description['Name']
-        ui_name = description['UIName']
-        raise NotImplementedError
-        # game_object = GameObject(self.__object_type, object_definition)
-        # return game_object
